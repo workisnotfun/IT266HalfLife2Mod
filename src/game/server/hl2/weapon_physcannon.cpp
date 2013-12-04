@@ -1439,7 +1439,8 @@ enum
 //-----------------------------------------------------------------------------
 bool PlayerHasMegaPhysCannon()
 {
-	return ( HL2GameRules()->MegaPhyscannonActive() == true );
+	return true;
+	//return ( HL2GameRules()->MegaPhyscannonActive() == true );
 }
 
 
@@ -1865,7 +1866,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 			IServerVehicle *pVehicle = pEntity->GetServerVehicle();
 			if ( pVehicle )
 			{
-				maxMass *= 2.5;	// 625 for vehicles
+				//maxMass *= 2.5;	// 625 for vehicles
 			}
 			float mass = min(totalMass, maxMass); // max 250kg of additional force
 
@@ -1910,7 +1911,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 
 	// Don't allow the gun to regrab a thrown object!!
-	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.2f;
 }
 
 //-----------------------------------------------------------------------------
@@ -2028,7 +2029,7 @@ void CWeaponPhysCannon::PuntRagdoll( CBaseEntity *pEntity, const Vector &vecForw
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 
 	// Don't allow the gun to regrab a thrown object!!
-	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.2f;
 }
 
 
@@ -2102,22 +2103,22 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 		// Punch the object being held!!
 		Vector forward;
 		pOwner->EyeVectors( &forward );
-
+		//gg65
 		// Validate the item is within punt range
-		CBaseEntity *pHeld = m_grabController.GetAttached();
+		/*CBaseEntity *pHeld = m_grabController.GetAttached();
 		Assert( pHeld != NULL );
 
 		if ( pHeld != NULL )
 		{
 			float heldDist = pHeld->CollisionProp()->CalcDistanceFromPoint(pOwner->WorldSpaceCenter() );
-
+			//gg65 trying to punt far away objects by commenting this part out
 			if ( heldDist > physcannon_tracelength.GetFloat() )
 			{
 				// We can't punt this yet
 				DryFire();
 				return;
 			}
-		}
+		}*/
 
 		LaunchObject( forward, physcannon_maxforce.GetFloat() );
 
@@ -2127,11 +2128,11 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	}
 
 	// If not active, just issue a physics punch in the world.
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.2f;
 
 	Vector forward;
 	pOwner->EyeVectors( &forward );
-
+	//gg65 punt anything here
 	// NOTE: Notice we're *not* using the mega tracelength here
 	// when you have the mega cannon. Punting has shorter range.
 	Vector start, end;
@@ -2277,8 +2278,8 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 	if ( ( m_bActive ) && ( pOwner->m_afButtonPressed & IN_ATTACK2 ) )
 	{
 		// Drop the held object
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5;
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.2;
 
 		DetachObject();
 
@@ -2295,7 +2296,7 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 		case OBJECT_FOUND:
 			WeaponSound( SPECIAL1 );
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-			m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+			m_flNextSecondaryAttack = gpGlobals->curtime + 0.2f;
 
 			// We found an object. Debounce the button
 			m_nAttack2Debounce |= pOwner->m_nButtons;
@@ -2527,7 +2528,7 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 		pEntity = pConeEntity;
 
 		// If the object is near, grab it. Else, pull it a bit.
-		if ( pEntity->WorldSpaceCenter().DistToSqr( start ) <= (testLength * testLength) )
+		if ( pEntity->WorldSpaceCenter().DistToSqr( start ) <= (testLength * testLength * testLength) )
 		{
 			bAttach = true;
 		}
@@ -2600,7 +2601,7 @@ CBaseEntity *CWeaponPhysCannon::MegaPhysCannonFindObjectInCone( const Vector &ve
 {
 	// Find the nearest physics-based item in a cone in front of me.
 	CBaseEntity *list[1024];
-	float flMaxDist = TraceLength() + 1.0;
+	float flMaxDist = TraceLength() + 10000.0;
 	float flNearestDist = flMaxDist;
 	bool bNearestIsCombineBall = bOnlyCombineBalls ? true : false;
 	Vector mins = vecOrigin - Vector( flNearestDist, flNearestDist, flNearestDist );
@@ -2669,7 +2670,7 @@ CBaseEntity *CWeaponPhysCannon::FindObjectInCone( const Vector &vecOrigin, const
 {
 	// Find the nearest physics-based item in a cone in front of me.
 	CBaseEntity *list[256];
-	float flNearestDist = physcannon_tracelength.GetFloat() + 1.0; //Use regular distance.
+	float flNearestDist = physcannon_tracelength.GetFloat() + 10000.0; //gets punting distance. gg65
 	Vector mins = vecOrigin - Vector( flNearestDist, flNearestDist, flNearestDist );
 	Vector maxs = vecOrigin + Vector( flNearestDist, flNearestDist, flNearestDist );
 
@@ -2733,8 +2734,8 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 		float flDot = DotProduct( los, forward );
 
 		//Let go of the item if we turn around too fast.
-		if ( flDot <= 0.35f )
-			return false;
+		//if ( flDot <= 0.35f )
+			//return false;
 	}
 	
 	float pitch = AngleDistance(playerAngles.x,0);
@@ -3365,7 +3366,7 @@ void CWeaponPhysCannon::LaunchObject( const Vector &vecDir, float flForce )
 		ApplyVelocityBasedForce( pObject, vecDir, tr.endpos, PHYSGUN_FORCE_LAUNCHED );
 
 		// Don't allow the gun to regrab a thrown object!!
-		m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
+		m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
 		
 		Vector	center = pObject->WorldSpaceCenter();
 
