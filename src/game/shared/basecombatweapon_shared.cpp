@@ -1624,11 +1624,15 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 		Reload();
 		m_fFireDuration = 0.0f;
 	}
+	// -----------------------
+	// Use Force
+	// -----------------------
 
+	if ( pOwner->m_nButtons & IN_FORCE ) { Force();  }
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if (!((pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2) || (pOwner->m_nButtons & IN_RELOAD)))
+	if (!((pOwner->m_nButtons & IN_ATTACK) || (pOwner->m_nButtons & IN_ATTACK2) || (pOwner->m_nButtons & IN_FORCE) || (pOwner->m_nButtons & IN_RELOAD)))
 	{
 		// no fire buttons down or reloading
 		if ( !ReloadOrSwitchWeapons() && ( m_bInReload == false ) )

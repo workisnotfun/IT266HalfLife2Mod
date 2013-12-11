@@ -120,6 +120,7 @@ static	kbutton_t	in_break;
 static	kbutton_t	in_zoom;
 static  kbutton_t   in_grenade1;
 static  kbutton_t   in_grenade2;
+static  kbutton_t   in_force;
 kbutton_t	in_ducktoggle;
 
 /*
@@ -444,6 +445,8 @@ void IN_StrafeDown( const CCommand &args ) {KeyDown(&in_strafe, args[1] );}
 void IN_StrafeUp( const CCommand &args ) {KeyUp(&in_strafe, args[1] );}
 void IN_Attack2Down( const CCommand &args ) { KeyDown(&in_attack2, args[1] );}
 void IN_Attack2Up( const CCommand &args ) {KeyUp(&in_attack2, args[1] );}
+void IN_ForceDown(const CCommand &args) {KeyDown(&in_force, args[1]);}
+void IN_ForceUp(const CCommand &args) {KeyUp(&in_force, args[1]);}
 void IN_UseDown ( const CCommand &args ) {KeyDown(&in_use, args[1] );}
 void IN_UseUp ( const CCommand &args ) {KeyUp(&in_use, args[1] );}
 void IN_JumpDown ( const CCommand &args ) {KeyDown(&in_jump, args[1] );}
@@ -1293,6 +1296,7 @@ int CInput::GetButtonBits( int bResetState )
 	CalcButtonBits( bits, IN_MOVELEFT, s_ClearInputState, &in_moveleft, bResetState );
 	CalcButtonBits( bits, IN_MOVERIGHT, s_ClearInputState, &in_moveright, bResetState );
 	CalcButtonBits( bits, IN_ATTACK2, s_ClearInputState, &in_attack2, bResetState );
+	CalcButtonBits( bits, IN_FORCE, s_ClearInputState, &in_force, bResetState );
 	CalcButtonBits( bits, IN_RELOAD, s_ClearInputState, &in_reload, bResetState );
 	CalcButtonBits( bits, IN_ALT1, s_ClearInputState, &in_alt1, bResetState );
 	CalcButtonBits( bits, IN_ALT2, s_ClearInputState, &in_alt2, bResetState );
@@ -1422,7 +1426,8 @@ static ConCommand startattack("+attack", IN_AttackDown);
 static ConCommand endattack("-attack", IN_AttackUp);
 static ConCommand startattack2("+attack2", IN_Attack2Down);
 static ConCommand endattack2("-attack2", IN_Attack2Up);
-static ConCommand startuse("+use", IN_UseDown);
+static ConCommand startforce("+force", IN_ForceDown);
+static ConCommand endforce("-force", IN_ForceUp);
 static ConCommand enduse("-use", IN_UseUp);
 static ConCommand startjump("+jump", IN_JumpDown);
 static ConCommand endjump("-jump", IN_JumpUp);

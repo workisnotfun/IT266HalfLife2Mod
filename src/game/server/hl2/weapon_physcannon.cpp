@@ -1122,7 +1122,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 		}
 #endif
 		// +ATTACK will throw phys objects
-		if ( m_pPlayer->m_nButtons & IN_ATTACK )
+		if ( (m_pPlayer->m_nButtons & IN_ATTACK) ||(m_pPlayer->m_nButtons & IN_FORCE) )
 		{
 			Shutdown( true );
 			Vector vecLaunch;
@@ -1210,6 +1210,7 @@ public:
 	virtual void	UpdateOnRemove(void);
 	void	PrimaryAttack();
 	void	SecondaryAttack();
+	void	Force();
 	void	WeaponIdle();
 	void	ItemPreFrame();
 	void	ItemPostFrame();
@@ -1754,7 +1755,7 @@ void CWeaponPhysCannon::PuntNonVPhysics( CBaseEntity *pEntity, const Vector &for
 	//Explosion effect
 	DoEffect( EFFECT_LAUNCH, &tr.endpos );
 
-	PrimaryFireEffect();
+	//PrimaryFireEffect();
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
 	m_nChangeState = ELEMENT_STATE_CLOSED;
@@ -2122,13 +2123,184 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 
 		LaunchObject( forward, physcannon_maxforce.GetFloat() );
 
-		PrimaryFireEffect();
+		//PrimaryFireEffect();
 		SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 		return;
 	}
 
 	// If not active, just issue a physics punch in the world.
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.2f;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 3.2f;
+
+	Vector forward;
+	pOwner->EyeVectors( &forward );
+	//gg65 punt anything here
+	// NOTE: Notice we're *not* using the mega tracelength here
+	// when you have the mega cannon. Punting has shorter range.
+	Vector start, end;
+	start = pOwner->Weapon_ShootPosition();
+	float flPuntDistance = physcannon_tracelength.GetFloat();
+	VectorMA( start, flPuntDistance, forward, end );
+
+	trace_t tr;
+	UTIL_PhyscannonTraceHull( start, end, -Vector(8,8,8), Vector(8,8,8), pOwner, &tr );
+	bool bValid = true;
+	CBaseEntity *pEntity = tr.m_pEnt;
+	if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
+	{
+		bValid = false;
+	}
+	else if ( (pEntity->GetMoveType() != MOVETYPE_VPHYSICS) && ( pEntity->m_takedamage == DAMAGE_NO ) )
+	{
+		bValid = false;
+	}
+
+	// If the entity we've hit is invalid, try a traceline instead
+	if ( !bValid )
+	{
+		UTIL_PhyscannonTraceLine( start, end, pOwner, &tr );
+		if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
+		{
+			if( hl2_episodic.GetBool() )
+			{
+				// Try to find something in a very small cone. 
+				CBaseEntity *pObject = FindObjectInCone( start, forward, physcannon_punt_cone.GetFloat() );
+
+				if( pObject )
+				{
+					// Trace to the object.
+					UTIL_PhyscannonTraceLine( start, pObject->WorldSpaceCenter(), pOwner, &tr );
+
+					if( tr.m_pEnt && tr.m_pEnt == pObject && !(pObject->IsEFlagSet(EFL_NO_PHYSCANNON_INTERACTION)) )
+					{
+						bValid = true;
+						pEntity = pObject;
+					}
+				}
+			}
+		}
+		else
+		{
+			bValid = true;
+			pEntity = tr.m_pEnt;
+		}
+	}
+
+	if( !bValid )
+	{
+		DryFire();
+		return;
+	}
+
+	// See if we hit something
+	if ( pEntity->GetMoveType() != MOVETYPE_VPHYSICS )
+	{
+		if ( pEntity->m_takedamage == DAMAGE_NO )
+		{
+			DryFire();
+			return;
+		}
+
+		if( GetOwner()->IsPlayer() && !IsMegaPhysCannon() )
+		{
+			// Don't let the player zap any NPC's except regular antlions and headcrabs.
+			if( pEntity->IsNPC() && pEntity->Classify() != CLASS_HEADCRAB && !FClassnameIs(pEntity, "npc_antlion") )
+			{
+				DryFire();
+				return;
+			}
+		}
+
+		if ( IsMegaPhysCannon() )
+		{
+			if ( pEntity->IsNPC() && !pEntity->IsEFlagSet( EFL_NO_MEGAPHYSCANNON_RAGDOLL ) && pEntity->MyNPCPointer()->CanBecomeRagdoll() )
+			{
+				CTakeDamageInfo info( pOwner, pOwner, 1.0f, DMG_GENERIC );
+				CBaseEntity *pRagdoll = CreateServerRagdoll( pEntity->MyNPCPointer(), 0, info, COLLISION_GROUP_INTERACTIVE_DEBRIS, true );
+				PhysSetEntityGameFlags( pRagdoll, FVPHYSICS_NO_SELF_COLLISIONS );
+				pRagdoll->SetCollisionBounds( pEntity->CollisionProp()->OBBMins(), pEntity->CollisionProp()->OBBMaxs() );
+
+				// Necessary to cause it to do the appropriate death cleanup
+				CTakeDamageInfo ragdollInfo( pOwner, pOwner, 10000.0, DMG_PHYSGUN | DMG_REMOVENORAGDOLL );
+				pEntity->TakeDamage( ragdollInfo );
+
+				PuntRagdoll( pRagdoll, forward, tr );
+				return;
+			}
+		}
+
+		PuntNonVPhysics( pEntity, forward, tr );
+	}
+	else
+	{
+		if ( EntityAllowsPunts( pEntity) == false )
+		{
+			DryFire();
+			return;
+		}
+
+		if ( !IsMegaPhysCannon() )
+		{
+			if ( pEntity->VPhysicsIsFlesh( ) )
+			{
+				DryFire();
+				return;
+			}
+			PuntVPhysics( pEntity, forward, tr );
+		}
+		else
+		{
+			if ( dynamic_cast<CRagdollProp*>(pEntity) )
+			{
+				PuntRagdoll( pEntity, forward, tr );
+			}
+			else
+			{
+				PuntVPhysics( pEntity, forward, tr );
+			}
+		}
+	}
+}
+void CWeaponPhysCannon::Force( void )
+{
+	if( m_flNextPrimaryAttack > gpGlobals->curtime )
+		return;
+
+	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	
+	if ( pOwner == NULL )
+		return;
+
+	if( m_bActive )
+	{
+		// Punch the object being held!!
+		Vector forward;
+		pOwner->EyeVectors( &forward );
+		//gg65
+		// Validate the item is within punt range
+		/*CBaseEntity *pHeld = m_grabController.GetAttached();
+		Assert( pHeld != NULL );
+
+		if ( pHeld != NULL )
+		{
+			float heldDist = pHeld->CollisionProp()->CalcDistanceFromPoint(pOwner->WorldSpaceCenter() );
+			//gg65 trying to punt far away objects by commenting this part out
+			if ( heldDist > physcannon_tracelength.GetFloat() )
+			{
+				// We can't punt this yet
+				DryFire();
+				return;
+			}
+		}*/
+
+		LaunchObject( forward, physcannon_maxforce.GetFloat() );
+
+		//PrimaryFireEffect();
+		//SendWeaponAnim( ACT_VM_SECONDARYATTACK );
+		return;
+	}
+
+	// If not active, just issue a physics punch in the world.
+	m_flNextPrimaryAttack = gpGlobals->curtime + 3.2f;
 
 	Vector forward;
 	pOwner->EyeVectors( &forward );
@@ -2278,7 +2450,7 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 	if ( ( m_bActive ) && ( pOwner->m_afButtonPressed & IN_ATTACK2 ) )
 	{
 		// Drop the held object
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+		m_flNextPrimaryAttack = gpGlobals->curtime + 1.2;
 		m_flNextSecondaryAttack = gpGlobals->curtime + 0.2;
 
 		DetachObject();
@@ -3303,10 +3475,14 @@ void CWeaponPhysCannon::ItemPostFrame()
 	{
 		m_nAttack2Debounce = 0;
 	}
-
+	
 	if ( pOwner->m_nButtons & IN_ATTACK )
 	{
 		PrimaryAttack();
+	}
+	if ( pOwner->m_nButtons & IN_FORCE )
+	{
+		Force();
 	}
 	else 
 	{
@@ -3317,9 +3493,9 @@ void CWeaponPhysCannon::ItemPostFrame()
 	{
 		if ( IsMegaPhysCannon() )
 		{
-			if ( !( pOwner->m_nButtons & IN_ATTACK ) )
+			if ( !( pOwner->m_nButtons & IN_ATTACK ) || !( pOwner->m_nButtons & IN_FORCE ) )
 			{
-				m_flNextPrimaryAttack = gpGlobals->curtime;
+				//m_flNextPrimaryAttack = gpGlobals->curtime;
 			}
 		}
 	}

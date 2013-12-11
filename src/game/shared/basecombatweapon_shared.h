@@ -230,6 +230,7 @@ public:
 	// Weapon firing
 	virtual void			PrimaryAttack( void );						// do "+ATTACK"
 	virtual void			SecondaryAttack( void ) { return; }			// do "+ATTACK2"
+	virtual void			Force( void ) { return; }					// do "+force"
 
 	// Firing animations
 	virtual Activity		GetPrimaryAttackActivity( void );
