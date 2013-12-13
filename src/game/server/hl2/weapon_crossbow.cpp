@@ -24,6 +24,7 @@
 #include "rumble_shared.h"
 #include "gamestats.h"
 #include "decals.h"
+#include "force.h"
 
 #ifdef PORTAL
 	#include "portal_util_shared.h"
@@ -419,16 +420,16 @@ void CCrossbowBolt::BubbleThink( void )
 // CWeaponCrossbow
 //-----------------------------------------------------------------------------
 
-class CWeaponCrossbow : public CBaseHLCombatWeapon
+class CWeaponCrossbow : public CHLCombatWeaponWithSomePhysics 
 {
-	DECLARE_CLASS( CWeaponCrossbow, CBaseHLCombatWeapon );
+	DECLARE_CLASS( CWeaponCrossbow, CHLCombatWeaponWithSomePhysics  );
 public:
 	CWeaponCrossbow( void );
 	
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
 	virtual void	SecondaryAttack( void );
-//	virtual void	Force( void ) { CWeaponPhysCannon A; A.Force(); };
+	//virtual void	Force( void ) { };
 	virtual bool	Deploy( void );
 	virtual void	Drop( const Vector &vecVelocity );
 	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
