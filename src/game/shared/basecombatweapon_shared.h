@@ -477,6 +477,7 @@ public:
 
 	// Weapon firing
 	CNetworkVar( float, m_flNextPrimaryAttack );						// soonest time ItemPostFrame will call PrimaryAttack
+	CNetworkVar( float, forcepower );						// stat that allows you to use force
 	CNetworkVar( float, m_flNextSecondaryAttack );					// soonest time ItemPostFrame will call SecondaryAttack
 	CNetworkVar( float, m_flTimeWeaponIdle );							// soonest time ItemPostFrame will call WeaponIdle
 	// Weapon state

@@ -45,7 +45,6 @@ void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, 
 
 #define	BOLT_SKIN_NORMAL	0
 #define BOLT_SKIN_GLOW		1
-
 //-----------------------------------------------------------------------------
 // Crossbow Bolt
 //-----------------------------------------------------------------------------
@@ -424,12 +423,12 @@ class CWeaponCrossbow : public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS( CWeaponCrossbow, CBaseHLCombatWeapon );
 public:
-
 	CWeaponCrossbow( void );
 	
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
 	virtual void	SecondaryAttack( void );
+//	virtual void	Force( void ) { CWeaponPhysCannon A; A.Force(); };
 	virtual bool	Deploy( void );
 	virtual void	Drop( const Vector &vecVelocity );
 	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );

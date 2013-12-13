@@ -1241,8 +1241,6 @@ public:
 	
 	bool	ShouldDisplayHUDHint() { return true; }
 
-
-
 protected:
 	enum FindObjectResult_t
 	{
@@ -1584,7 +1582,7 @@ bool CWeaponPhysCannon::Deploy( void )
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::SetViewModel( void )
 {
-	if ( !IsMegaPhysCannon() )
+	if ( IsMegaPhysCannon() )
 	{
 		BaseClass::SetViewModel();
 		return;
@@ -2275,27 +2273,8 @@ void CWeaponPhysCannon::Force( void )
 		// Punch the object being held!!
 		Vector forward;
 		pOwner->EyeVectors( &forward );
-		//gg65
-		// Validate the item is within punt range
-		/*CBaseEntity *pHeld = m_grabController.GetAttached();
-		Assert( pHeld != NULL );
-
-		if ( pHeld != NULL )
-		{
-			float heldDist = pHeld->CollisionProp()->CalcDistanceFromPoint(pOwner->WorldSpaceCenter() );
-			//gg65 trying to punt far away objects by commenting this part out
-			if ( heldDist > physcannon_tracelength.GetFloat() )
-			{
-				// We can't punt this yet
-				DryFire();
-				return;
-			}
-		}*/
 
 		LaunchObject( forward, physcannon_maxforce.GetFloat() );
-
-		//PrimaryFireEffect();
-		//SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 		return;
 	}
 

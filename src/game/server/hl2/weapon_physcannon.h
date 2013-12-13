@@ -29,5 +29,4 @@ CBaseEntity *PhysCannonGetHeldEntity( CBaseCombatWeapon *pActiveWeapon );
 CBaseEntity *GetPlayerHeldEntity( CBasePlayer *pPlayer );
 
 bool PhysCannonAccountableForObject( CBaseCombatWeapon *pPhysCannon, CBaseEntity *pObject );
-
 #endif // WEAPON_PHYSCANNON_H

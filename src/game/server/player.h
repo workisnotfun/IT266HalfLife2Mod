@@ -223,7 +223,7 @@ private:
 	CBasePlayer *m_pParent; 
 };
 
-
+//gg65
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
