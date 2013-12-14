@@ -2387,15 +2387,29 @@ bool CGameMovement::CheckJumpButton( void )
 		}
 
 		return false;
-	}
+	}   
+	float startz = 0.0f;
+    float starty = 0.0f;
+    float startx = 0.0f;
 
+    float flMul=20;
 	// No more effect
  	if (player->GetGroundEntity() == NULL)
+	{  
+        // Store the original velocity 
+        startx = mv->m_vecVelocity[0];
+        starty = mv->m_vecVelocity[1];
+        startz = mv->m_vecVelocity[2];
+
+        mv->m_vecVelocity[2] += flMul;    // Jump! 
+        
+	}
+ 	/*gg65if (player->GetGroundEntity() == NULL)
 	{
 		mv->m_nOldButtons |= IN_JUMP;
 		return false;		// in air, so no effect
-	}
-
+	}*/
+	flMul=0;
 	// Don't allow jumping when the player is in a stasis field.
 #ifndef HL2_EPISODIC
 	if ( player->m_Local.m_bSlowMovement )
@@ -2427,7 +2441,7 @@ bool CGameMovement::CheckJumpButton( void )
 		flGroundFactor = player->m_pSurfaceData->game.jumpFactor; 
 	}
 
-	float flMul;
+//	float flMul;
 	if ( g_bMovementOptimizations )
 	{
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
@@ -2446,7 +2460,8 @@ bool CGameMovement::CheckJumpButton( void )
 
 	// Acclerate upward
 	// If we are ducking...
-	float startz = mv->m_vecVelocity[2];
+	/*gg65float*/ 
+	startz = mv->m_vecVelocity[2];
 	if ( (  player->m_Local.m_bDucking ) || (  player->GetFlags() & FL_DUCKING ) )
 	{
 		// d = 0.5 * g * t^2		- distance traveled with linear accel

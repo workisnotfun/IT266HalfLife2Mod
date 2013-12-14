@@ -2127,7 +2127,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	}
 
 	// If not active, just issue a physics punch in the world.
-	m_flNextPrimaryAttack = gpGlobals->curtime + 3.2f;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 1.2f;
 
 	Vector forward;
 	pOwner->EyeVectors( &forward );
@@ -2841,7 +2841,7 @@ CBaseEntity *CWeaponPhysCannon::FindObjectInCone( const Vector &vecOrigin, const
 {
 	// Find the nearest physics-based item in a cone in front of me.
 	CBaseEntity *list[256];
-	float flNearestDist = physcannon_tracelength.GetFloat() + 10000.0; //gets punting distance. gg65
+	float flNearestDist = physcannon_tracelength.GetFloat() + 7000.0; //gets punting distance. gg65
 	Vector mins = vecOrigin - Vector( flNearestDist, flNearestDist, flNearestDist );
 	Vector maxs = vecOrigin + Vector( flNearestDist, flNearestDist, flNearestDist );
 
