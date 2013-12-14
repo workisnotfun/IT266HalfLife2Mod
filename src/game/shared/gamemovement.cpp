@@ -1391,6 +1391,10 @@ void CGameMovement::WaterMove( void )
 	{
 		wishvel[2] += mv->m_flClientMaxSpeed;
 	}
+	if (mv->m_nButtons & IN_FORCE)
+	{
+		wishvel[2] += mv->m_flClientMaxSpeed;
+	}
 	// Sinking after no other movement occurs
 	else if (!mv->m_flForwardMove && !mv->m_flSideMove && !mv->m_flUpMove)
 	{

@@ -2809,6 +2809,8 @@ CBaseEntity	*CBasePlayer::GetHeldObject( void )
 //-----------------------------------------------------------------------------
 void CBasePlayer::Jump()
 {
+	m_Activity = ACT_LEAP;
+	SetAnimation( PLAYER_SUPERJUMP );
 }
 
 void CBasePlayer::Duck( )
@@ -5985,10 +5987,10 @@ static ConCommand ch_createairboat( "ch_createairboat", CC_CH_CreateAirboat, "Sp
 void CBasePlayer::CheatImpulseCommands( int iImpulse )
 {
 #if !defined( HLDEMO_BUILD )
-	if ( !sv_cheats->GetBool() )
+	/*gg65if ( !sv_cheats->GetBool() )
 	{
 		return;
-	}
+	}*/
 
 	CBaseEntity *pEntity;
 	trace_t tr;

@@ -2258,6 +2258,26 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 		}
 	}
 }
+void CWeaponPhysCannon::Force (void)
+{
+	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	pOwner->Jump();
+	/*Vector	dir, end;
+	Vector	start = pOwner->EyePosition();
+		
+	AngleVectors( pOwner->EyeAngles(), &dir );
+	VectorNormalize( dir );
+	VectorMA( start, -64.0f, dir, end );
+
+	Ray_t ray;
+	ray.Init( start, end, VEC_DUCK_HULL_MIN	, VEC_DUCK_HULL_MAX );
+
+	trace_t	tr;
+	UTIL_TraceRay( ray, MASK_PLAYERSOLID, pOwner, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+
+	pOwner->JumptoPosition( tr.endpos, pOwner->EyeAngles() );*/
+}
+/*
 void CWeaponPhysCannon::Force( void )
 {
 	if( m_flNextPrimaryAttack > gpGlobals->curtime )
@@ -2410,7 +2430,7 @@ void CWeaponPhysCannon::Force( void )
 		}
 	}
 }
-
+*/
 
 //-----------------------------------------------------------------------------
 // Purpose: Click secondary attack whilst holding an object to hurl it.

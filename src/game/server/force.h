@@ -87,12 +87,12 @@ extern ConVar hl2_walkspeed;
 //  Physcannon trace filter to handle special cases
 // -------------------------------------------------------------------------
 
-class CTraceFilterPhyscannon : public CTraceFilterSimple
+class CTraceFilterPhyscannon1 : public CTraceFilterSimple
 {
 public:
-	DECLARE_CLASS( CTraceFilterPhyscannon, CTraceFilterSimple );
+	DECLARE_CLASS( CTraceFilterPhyscannon1, CTraceFilterSimple );
 
-	CTraceFilterPhyscannon( const IHandleEntity *passentity, int collisionGroup )
+	CTraceFilterPhyscannon1( const IHandleEntity *passentity, int collisionGroup )
 		: CTraceFilterSimple( NULL, collisionGroup ), m_pTraceOwner( passentity ) {	}
 
 	// For this test, we only test against entities (then world brushes afterwards)
@@ -189,12 +189,12 @@ public:
 //-----------------------------------------------------------------------------
 // this will hit skip the pass entity, but not anything it owns 
 // (lets player grab own grenades)
-class CTraceFilterNoOwnerTest : public CTraceFilterSimple
+class CTraceFilterNoOwnerTest1 : public CTraceFilterSimple
 {
 public:
-	DECLARE_CLASS( CTraceFilterNoOwnerTest, CTraceFilterSimple );
+	DECLARE_CLASS( CTraceFilterNoOwnerTest1, CTraceFilterSimple );
 
-	CTraceFilterNoOwnerTest( const IHandleEntity *passentity, int collisionGroup )
+	CTraceFilterNoOwnerTest1( const IHandleEntity *passentity, int collisionGroup )
 		: CTraceFilterSimple( NULL, collisionGroup ), m_pPassNotOwner(passentity)
 	{
 	}
@@ -219,13 +219,13 @@ void UTIL_PhyscannonTraceLine( const Vector &vecAbsStart, const Vector &vecAbsEn
 	// Default to HL2 vanilla
 	if ( hl2_episodic.GetBool() == false )
 	{
-		CTraceFilterNoOwnerTest filter( pTraceOwner, COLLISION_GROUP_NONE );
+		CTraceFilterNoOwnerTest1 filter( pTraceOwner, COLLISION_GROUP_NONE );
 		UTIL_TraceLine( vecAbsStart, vecAbsEnd, (MASK_SHOT|CONTENTS_GRATE), &filter, pTrace );
 		return;
 	}
 
 	// First, trace against entities
-	CTraceFilterPhyscannon filter( pTraceOwner, COLLISION_GROUP_NONE );
+	CTraceFilterPhyscannon1 filter( pTraceOwner, COLLISION_GROUP_NONE );
 	UTIL_TraceLine( vecAbsStart, vecAbsEnd, (MASK_SHOT|CONTENTS_GRATE), &filter, pTrace );
 
 	// If we've hit something, test again to make sure no brushes block us
@@ -251,13 +251,13 @@ void UTIL_PhyscannonTraceHull( const Vector &vecAbsStart, const Vector &vecAbsEn
 	// Default to HL2 vanilla
 	if ( hl2_episodic.GetBool() == false )
 	{
-		CTraceFilterNoOwnerTest filter( pTraceOwner, COLLISION_GROUP_NONE );
+		CTraceFilterNoOwnerTest1 filter( pTraceOwner, COLLISION_GROUP_NONE );
 		UTIL_TraceHull( vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT|CONTENTS_GRATE), &filter, pTrace );
 		return;
 	}
 
 	// First, trace against entities
-	CTraceFilterPhyscannon filter( pTraceOwner, COLLISION_GROUP_NONE );
+	CTraceFilterPhyscannon1 filter( pTraceOwner, COLLISION_GROUP_NONE );
 	UTIL_TraceHull( vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT|CONTENTS_GRATE), &filter, pTrace );
 
 	// If we've hit something, test again to make sure no brushes block us
@@ -455,14 +455,14 @@ BEGIN_SIMPLE_DATADESC( game_shadowcontrol_params_t )
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-class CGrabController : public IMotionEvent
+class CGrabController1 : public IMotionEvent
 {
 	DECLARE_SIMPLE_DATADESC();
 
 public:
 
-	CGrabController( void );
-	~CGrabController( void );
+	CGrabController1( void );
+	~CGrabController1( void );
 	void AttachEntity( CBasePlayer *pPlayer, CBaseEntity *pEntity, IPhysicsObject *pPhys, bool bIsMegaPhysCannon, const Vector &vGrabPosition, bool bUseGrabPosition );
 	void DetachEntity( bool bClearVelocity );
 	void OnRestore();
@@ -515,7 +515,7 @@ private:
 	friend class CHLCombatWeaponWithSomePhysics ;
 };
 
-BEGIN_SIMPLE_DATADESC( CGrabController )
+BEGIN_SIMPLE_DATADESC( CGrabController1 )
 
 	DEFINE_EMBEDDED( m_shadow ),
 
@@ -545,7 +545,7 @@ END_DATADESC()
 const float DEFAULT_MAX_ANGULAR = 360.0f * 10.0f;
 const float REDUCED_CARRY_MASS = 1.0f;
 
-CGrabController::CGrabController( void )
+CGrabController1::CGrabController1( void )
 {
 	m_shadow.dampFactor = 1.0;
 	m_shadow.teleportDistance = 0;
@@ -562,12 +562,12 @@ CGrabController::CGrabController( void )
 	m_flDistanceOffset = 0;
 }
 
-CGrabController::~CGrabController( void )
+CGrabController1::~CGrabController1( void )
 {
 	DetachEntity( false );
 }
 
-void CGrabController::OnRestore()
+void CGrabController1::OnRestore()
 {
 	if ( m_controller )
 	{
@@ -575,7 +575,7 @@ void CGrabController::OnRestore()
 	}
 }
 
-void CGrabController::SetTargetPosition( const Vector &target, const QAngle &targetOrientation )
+void CGrabController1::SetTargetPosition( const Vector &target, const QAngle &targetOrientation )
 {
 	m_shadow.targetPosition = target;
 	m_shadow.targetRotation = targetOrientation;
@@ -602,7 +602,7 @@ void CGrabController::SetTargetPosition( const Vector &target, const QAngle &tar
 // Purpose: 
 // Output : float
 //-----------------------------------------------------------------------------
-float CGrabController::ComputeError()
+float CGrabController1::ComputeError()
 {
 	if ( m_errorTime <= 0 )
 		return 0;
@@ -654,7 +654,7 @@ float CGrabController::ComputeError()
 #define MASS_SPEED_SCALE	60
 #define MAX_MASS			40
 
-void CGrabController::ComputeMaxSpeed( CBaseEntity *pEntity, IPhysicsObject *pPhysics )
+void CGrabController1::ComputeMaxSpeed( CBaseEntity *pEntity, IPhysicsObject *pPhysics )
 {
 	m_shadow.maxSpeed = 1000;
 	m_shadow.maxAngular = DEFAULT_MAX_ANGULAR;
@@ -684,7 +684,7 @@ void CGrabController::ComputeMaxSpeed( CBaseEntity *pEntity, IPhysicsObject *pPh
 }
 
 
-QAngle CGrabController::TransformAnglesToPlayerSpace( const QAngle &anglesIn, CBasePlayer *pPlayer )
+QAngle CGrabController1::TransformAnglesToPlayerSpace( const QAngle &anglesIn, CBasePlayer *pPlayer )
 {
 	if ( m_bIgnoreRelativePitch )
 	{
@@ -697,7 +697,7 @@ QAngle CGrabController::TransformAnglesToPlayerSpace( const QAngle &anglesIn, CB
 	return TransformAnglesToLocalSpace( anglesIn, pPlayer->EntityToWorldTransform() );
 }
 
-QAngle CGrabController::TransformAnglesFromPlayerSpace( const QAngle &anglesIn, CBasePlayer *pPlayer )
+QAngle CGrabController1::TransformAnglesFromPlayerSpace( const QAngle &anglesIn, CBasePlayer *pPlayer )
 {
 	if ( m_bIgnoreRelativePitch )
 	{
@@ -711,7 +711,7 @@ QAngle CGrabController::TransformAnglesFromPlayerSpace( const QAngle &anglesIn, 
 }
 
 
-void CGrabController::AttachEntity( CBasePlayer *pPlayer, CBaseEntity *pEntity, IPhysicsObject *pPhys, bool bIsMegaPhysCannon, const Vector &vGrabPosition, bool bUseGrabPosition )
+void CGrabController1::AttachEntity( CBasePlayer *pPlayer, CBaseEntity *pEntity, IPhysicsObject *pPhys, bool bIsMegaPhysCannon, const Vector &vGrabPosition, bool bUseGrabPosition )
 {
 	// play the impact sound of the object hitting the player
 	// used as feedback to let the player know he picked up the object
@@ -824,7 +824,7 @@ static void ClampPhysicsVelocity( IPhysicsObject *pPhys, float linearLimit, floa
 	pPhys->AddVelocity( &vel, &angVel );
 }
 
-void CGrabController::DetachEntity( bool bClearVelocity )
+void CGrabController1::DetachEntity( bool bClearVelocity )
 {
 	Assert(!PhysIsInCallback());
 	CBaseEntity *pEntity = GetAttached();
@@ -881,7 +881,7 @@ static bool InContactWithHeavyObject( IPhysicsObject *pObject, float heavyMass )
 	return contact;
 }
 
-IMotionEvent::simresult_e CGrabController::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )
+IMotionEvent::simresult_e CGrabController1::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )
 {
 	game_shadowcontrol_params_t shadowParams = m_shadow;
 	if ( InContactWithHeavyObject( pObject, GetLoadWeight() ) )
@@ -909,7 +909,7 @@ IMotionEvent::simresult_e CGrabController::Simulate( IPhysicsMotionController *p
 	return SIM_LOCAL_ACCELERATION;
 }
 
-float CGrabController::GetSavedMass( IPhysicsObject *pObject )
+float CGrabController1::GetSavedMass( IPhysicsObject *pObject )
 {
 	CBaseEntity *pHeld = m_attachedEntity;
 	if ( pHeld )
@@ -933,7 +933,7 @@ float CGrabController::GetSavedMass( IPhysicsObject *pObject )
 // directly overhead? The default behavior prevents lifting objects directly
 // overhead, but there are exceptions for gameplay purposes.
 //-----------------------------------------------------------------------------
-bool CGrabController::IsObjectAllowedOverhead( CBaseEntity *pEntity )
+bool CGrabController1::IsObjectAllowedOverhead( CBaseEntity *pEntity )
 {
 	// Allow combine balls overhead 
 	if( UTIL_IsCombineBallDefinite(pEntity) )
@@ -957,10 +957,10 @@ bool CGrabController::IsObjectAllowedOverhead( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 // Player pickup controller
 //-----------------------------------------------------------------------------
-class CPlayerPickupController : public CBaseEntity
+class CPlayerPickupController1 : public CBaseEntity
 {
 	DECLARE_DATADESC();
-	DECLARE_CLASS( CPlayerPickupController, CBaseEntity );
+	DECLARE_CLASS( CPlayerPickupController1, CBaseEntity );
 public:
 	void Init( CBasePlayer *pPlayer, CBaseEntity *pObject );
 	void Shutdown( bool bThrown = false );
@@ -974,19 +974,19 @@ public:
 	void VPhysicsShadowUpdate( IPhysicsObject *pPhysics ) {}
 
 	bool IsHoldingEntity( CBaseEntity *pEnt );
-	CGrabController &GetGrabController() { return m_grabController; }
+	CGrabController1 &GetGrabController() { return m_grabController; }
 
 private:
-	CGrabController		m_grabController;
+	CGrabController1		m_grabController;
 	CBasePlayer			*m_pPlayer;
 };
 
-LINK_ENTITY_TO_CLASS( player_pickup, CPlayerPickupController );
+LINK_ENTITY_TO_CLASS( player_pickup, CPlayerPickupController1 );
 
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CPlayerPickupController )
+BEGIN_DATADESC( CPlayerPickupController1 )
 
 	DEFINE_EMBEDDED( m_grabController ),
 
@@ -1002,7 +1002,7 @@ END_DATADESC()
 // Input  : *pPlayer - 
 //			*pObject - 
 //-----------------------------------------------------------------------------
-void CPlayerPickupController::Init( CBasePlayer *pPlayer, CBaseEntity *pObject )
+void CPlayerPickupController1::Init( CBasePlayer *pPlayer, CBaseEntity *pObject )
 {
 	// Holster player's weapon
 	if ( pPlayer->GetActiveWeapon() )
@@ -1047,7 +1047,7 @@ void CPlayerPickupController::Init( CBasePlayer *pPlayer, CBaseEntity *pObject )
 // Purpose: 
 // Input  : bool - 
 //-----------------------------------------------------------------------------
-void CPlayerPickupController::Shutdown( bool bThrown )
+void CPlayerPickupController1::Shutdown( bool bThrown )
 {
 	CBaseEntity *pObject = m_grabController.GetAttached();
 
@@ -1090,7 +1090,7 @@ void CPlayerPickupController::Shutdown( bool bThrown )
 }
 
 
-void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPlayerPickupController1::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	if ( ToBasePlayer(pActivator) == m_pPlayer )
 	{
@@ -1151,7 +1151,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 // Input  : *pEnt - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CPlayerPickupController::IsHoldingEntity( CBaseEntity *pEnt )
+bool CPlayerPickupController1::IsHoldingEntity( CBaseEntity *pEnt )
 {
 	return ( m_grabController.GetAttached() == pEnt );
 }
@@ -1162,7 +1162,7 @@ void PlayerPickupObject( CBasePlayer *pPlayer, CBaseEntity *pObject )
 	if ( pObject->VPhysicsGetObject() == NULL )
 		 return;
 
-	CPlayerPickupController *pController = (CPlayerPickupController *)CBaseEntity::Create( "player_pickup", pObject->GetAbsOrigin(), vec3_angle, pPlayer );
+	CPlayerPickupController1 *pController = (CPlayerPickupController1 *)CBaseEntity::Create( "player_pickup", pObject->GetAbsOrigin(), vec3_angle, pPlayer );
 	
 	if ( !pController )
 		return;
@@ -1221,7 +1221,7 @@ public:
 
 	void	ForceDrop( void );
 	bool	DropIfEntityHeld( CBaseEntity *pTarget );	// Drops its held entity if it matches the entity passed in
-	CGrabController &GetGrabController() { return m_grabController; }
+	CGrabController1 &GetGrabController() { return m_grabController; }
 
 	bool	CanHolster( void );
 	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
@@ -1344,7 +1344,7 @@ public:
 
 	CSoundPatch			*m_sndMotor;		// Whirring sound for the gun
 	
-	CGrabController		m_grabController;
+	CGrabController1		m_grabController;
 	
 	int					m_EffectState;		// Current state of the effects on the gun
 
@@ -1367,73 +1367,6 @@ public:
 	static bool m_sbStaticPoseParamsLoaded;
 };
 
-bool CHLCombatWeaponWithSomePhysics ::m_sbStaticPoseParamsLoaded = false;
-int CHLCombatWeaponWithSomePhysics ::m_poseActive = 0;
-
-IMPLEMENT_SERVERCLASS_ST(CHLCombatWeaponWithSomePhysics , DT_WeaponPhysCannon)
-	SendPropBool( SENDINFO( m_bIsCurrentlyUpgrading ) ),
-	SendPropFloat( SENDINFO( m_flTimeForceView ) ),
-END_SEND_TABLE()
-
-LINK_ENTITY_TO_CLASS( weapon_physcannon1, CHLCombatWeaponWithSomePhysics  );
-PRECACHE_WEAPON_REGISTER( weapon_physcannon1 );
-
-BEGIN_DATADESC( CHLCombatWeaponWithSomePhysics  )
-
-	DEFINE_FIELD( m_bOpen, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
-
-	DEFINE_FIELD( m_nChangeState, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flCheckSuppressTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flElementDebounce, FIELD_TIME ),
-	DEFINE_FIELD( m_flElementPosition, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flElementDestination, FIELD_FLOAT ),
-	DEFINE_FIELD( m_nAttack2Debounce, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bIsCurrentlyUpgrading, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeForceView, FIELD_TIME ),
-	DEFINE_FIELD( m_EffectState, FIELD_INTEGER ),
-
-	DEFINE_AUTO_ARRAY( m_hBeams, FIELD_EHANDLE ),
-	DEFINE_AUTO_ARRAY( m_hGlowSprites, FIELD_EHANDLE ),
-	DEFINE_AUTO_ARRAY( m_hEndSprites, FIELD_EHANDLE ),
-	DEFINE_AUTO_ARRAY( m_flEndSpritesOverride, FIELD_TIME ),
-	DEFINE_FIELD( m_hCenterSprite, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hBlastSprite, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastDenySoundPlayed, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bPhyscannonState, FIELD_BOOLEAN ),
-	DEFINE_SOUNDPATCH( m_sndMotor ),
-
-	DEFINE_EMBEDDED( m_grabController ),
-
-	// Physptrs can't be inside embedded classes
-	DEFINE_PHYSPTR( m_grabController.m_controller ),
-
-	DEFINE_THINKFUNC( WaitForUpgradeThink ),
-
-	DEFINE_UTLVECTOR( m_ThrownEntities, FIELD_EMBEDDED ),
-
-	DEFINE_FIELD( m_flTimeNextObjectPurge, FIELD_TIME ),
-
-END_DATADESC()
-
-
-enum
-{
-	ELEMENT_STATE_NONE = -1,
-	ELEMENT_STATE_OPEN,
-	ELEMENT_STATE_CLOSED,
-};
-
-enum
-{
-	EFFECT_NONE,
-	EFFECT_CLOSED,
-	EFFECT_READY,
-	EFFECT_HOLDING,
-	EFFECT_LAUNCH,
-};
-
-
 //-----------------------------------------------------------------------------
 // Do we have the super-phys gun?
 //-----------------------------------------------------------------------------
@@ -1442,62 +1375,6 @@ bool PlayerHasMegaPhysCannon()
 	return true;
 	//return ( HL2GameRules()->MegaPhyscannonActive() == true );
 }
-
-
-//-----------------------------------------------------------------------------
-// Constructor
-//-----------------------------------------------------------------------------
-CHLCombatWeaponWithSomePhysics ::CHLCombatWeaponWithSomePhysics ( void )
-{
-	m_flElementPosition		= 0.0f;
-	m_flElementDestination	= 0.0f;
-	m_bOpen					= false;
-	m_nChangeState			= ELEMENT_STATE_NONE;
-	m_flCheckSuppressTime	= 0.0f;
-	m_EffectState			= EFFECT_NONE;
-	m_flLastDenySoundPlayed	= false;
-
-	m_flEndSpritesOverride[0] = 0.0f;
-	m_flEndSpritesOverride[1] = 0.0f;
-
-	m_bPhyscannonState = false;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Precache
-//-----------------------------------------------------------------------------
-void CHLCombatWeaponWithSomePhysics ::Precache( void )
-{
-	PrecacheModel( PHYSCANNON_BEAM_SPRITE );
-	PrecacheModel( PHYSCANNON_GLOW_SPRITE );
-	PrecacheModel( PHYSCANNON_ENDCAP_SPRITE );
-	PrecacheModel( PHYSCANNON_CENTER_GLOW );
-	PrecacheModel( PHYSCANNON_BLAST_SPRITE );
-
-	PrecacheModel( MEGACANNON_BEAM_SPRITE );
-	PrecacheModel( MEGACANNON_GLOW_SPRITE );
-	PrecacheModel( MEGACANNON_ENDCAP_SPRITE );
-	PrecacheModel( MEGACANNON_CENTER_GLOW );
-	PrecacheModel( MEGACANNON_BLAST_SPRITE );
-
-	PrecacheModel( MEGACANNON_RAGDOLL_BOOGIE_SPRITE );
-
-	// Precache our alternate model
-	PrecacheModel( MEGACANNON_MODEL );
-
-	PrecacheScriptSound( "Weapon_PhysCannon.HoldSound" );
-	PrecacheScriptSound( "Weapon_Physgun.Off" );
-
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.DryFire" );
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.Launch" );
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.Pickup");
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.Drop");
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.HoldSound");
-	PrecacheScriptSound( "Weapon_MegaPhysCannon.ChargeZap");
-
-	BaseClass::Precache();
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1533,10 +1410,6 @@ void CHLCombatWeaponWithSomePhysics ::OnRestore()
 
 	// Tracker 8106:  Physcannon effects disappear through level transition, so
 	//  just recreate any effects here
-	if ( m_EffectState != EFFECT_NONE )
-	{
-		DoEffect( m_EffectState, NULL );
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1565,7 +1438,6 @@ inline float CHLCombatWeaponWithSomePhysics ::SpriteScaleFactor()
 bool CHLCombatWeaponWithSomePhysics ::Deploy( void )
 {
 	CloseElements();
-	DoEffect( EFFECT_READY );
 
 	// Unbloat our bounds
 	if ( IsMegaPhysCannon() )
@@ -1757,7 +1629,6 @@ void CHLCombatWeaponWithSomePhysics ::PuntNonVPhysics( CBaseEntity *pEntity, con
 	//PrimaryFireEffect();
 	//SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
-	m_nChangeState = ELEMENT_STATE_CLOSED;
 	m_flElementDebounce = gpGlobals->curtime + 0.5f;
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 }
@@ -1906,7 +1777,6 @@ void CHLCombatWeaponWithSomePhysics ::PuntVPhysics( CBaseEntity *pEntity, const 
 	//PrimaryFireEffect();
 	//SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
-	m_nChangeState = ELEMENT_STATE_CLOSED;
 	m_flElementDebounce = gpGlobals->curtime + 0.5f;
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 
@@ -2024,7 +1894,6 @@ void CHLCombatWeaponWithSomePhysics ::PuntRagdoll( CBaseEntity *pEntity, const V
 	//PrimaryFireEffect();
 	//SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
-	m_nChangeState = ELEMENT_STATE_CLOSED;
 	m_flElementDebounce = gpGlobals->curtime + 0.5f;
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 
@@ -2568,7 +2437,6 @@ bool CHLCombatWeaponWithSomePhysics ::AttachObject( CBaseEntity *pObject, const 
 	// Don't drop again for a slight delay, in case they were pulling objects near them
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.4f;
 
-	DoEffect( EFFECT_HOLDING );
 	OpenElements();
 
 	if ( GetMotorSound() )
@@ -2859,7 +2727,7 @@ CBaseEntity *CHLCombatWeaponWithSomePhysics ::FindObjectInCone( const Vector &ve
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
+bool CGrabController1::UpdateObject( CBasePlayer *pPlayer, float flError )
 {
  	CBaseEntity *pEntity = GetAttached();
 	if ( !pEntity || ComputeError() > flError || pPlayer->GetGroundEntity() == pEntity || !pEntity->VPhysicsGetObject() )
@@ -3116,19 +2984,12 @@ void CHLCombatWeaponWithSomePhysics ::CheckForTarget( void )
 			if ( CanPickupObject( tr.m_pEnt ) || Pickup_ForcePhysGunOpen( tr.m_pEnt, pOwner ) )
 			// if ( ( tr.m_pEnt->VPhysicsGetObject() != NULL ) && ( tr.m_pEnt->GetMoveType() == MOVETYPE_VPHYSICS ) )
 			{
-				m_nChangeState = ELEMENT_STATE_NONE;
 				OpenElements();
 				return;
 			}
 		}
 	}
 
-	// Close the elements after a delay to prevent overact state switching
-	if ( ( m_flElementDebounce < gpGlobals->curtime ) && ( m_nChangeState == ELEMENT_STATE_NONE ) )
-	{
-		m_nChangeState = ELEMENT_STATE_CLOSED;
-		m_flElementDebounce = gpGlobals->curtime + 0.5f;
-	}
 }
 
 
@@ -3364,30 +3225,14 @@ void CHLCombatWeaponWithSomePhysics ::DoEffectIdle( void )
 
 		if ( m_hCenterSprite != NULL )
 		{
-			if ( m_EffectState == EFFECT_HOLDING )
-			{
-				m_hCenterSprite->SetBrightness( random->RandomInt( 32, 64 ) );
-				m_hCenterSprite->SetScale( random->RandomFloat( 0.2, 0.25 ) * flScaleFactor );
-			}
-			else
-			{
 				m_hCenterSprite->SetBrightness( random->RandomInt( 32, 64 ) );
 				m_hCenterSprite->SetScale( random->RandomFloat( 0.125, 0.15 ) * flScaleFactor );
-			}
 		}
 		
 		if ( m_hBlastSprite != NULL )
 		{
-			if ( m_EffectState == EFFECT_HOLDING )
-			{
-				m_hBlastSprite->SetBrightness( random->RandomInt( 125, 150 ) );
-				m_hBlastSprite->SetScale( random->RandomFloat( 0.125, 0.15 ) * flScaleFactor );
-			}
-			else
-			{
 				m_hBlastSprite->SetBrightness( random->RandomInt( 32, 64 ) );
 				m_hBlastSprite->SetScale( random->RandomFloat( 0.075, 0.15 ) * flScaleFactor );
-			}
 		}
 	}
 }
@@ -3419,18 +3264,9 @@ void CHLCombatWeaponWithSomePhysics ::ItemPostFrame()
 	{
 		CheckForTarget();
 
-		if ( ( m_flElementDebounce < gpGlobals->curtime ) && ( m_nChangeState != ELEMENT_STATE_NONE ) )
+		if ( ( m_flElementDebounce < gpGlobals->curtime ))
 		{
-			if ( m_nChangeState == ELEMENT_STATE_OPEN )
-			{
-				OpenElements();
-			}
-			else if ( m_nChangeState == ELEMENT_STATE_CLOSED )
-			{
-				CloseElements();
-			}
-
-			m_nChangeState = ELEMENT_STATE_NONE;
+			OpenElements();
 		}
 	}
 
@@ -3444,11 +3280,6 @@ void CHLCombatWeaponWithSomePhysics ::ItemPostFrame()
 	{
 		// Reset our debouncer
 		m_flLastDenySoundPlayed = false;
-
-		if ( m_bActive == false )
-		{
-			DoEffect( EFFECT_READY );
-		}
 	}
 	
 	if (( pOwner->m_nButtons & IN_ATTACK2 ) == 0 )
@@ -3527,7 +3358,6 @@ void CHLCombatWeaponWithSomePhysics ::LaunchObject( const Vector &vecDir, float 
 		Vector	center = pObject->WorldSpaceCenter();
 
 		//Do repulse effect
-		DoEffect( EFFECT_LAUNCH, &center );
 	}
 
 	// Stop our looping sound
@@ -3538,7 +3368,6 @@ void CHLCombatWeaponWithSomePhysics ::LaunchObject( const Vector &vecDir, float 
 	}
 
 	//Close the elements and suppress checking for a bit
-	m_nChangeState = ELEMENT_STATE_CLOSED;
 	m_flElementDebounce = gpGlobals->curtime + 0.1f;
 	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
 }
@@ -3634,8 +3463,6 @@ void CHLCombatWeaponWithSomePhysics ::OpenElements( void )
 	SendWeaponAnim( ACT_VM_IDLE );
 
 	m_bOpen = true;
-
-	DoEffect( EFFECT_READY );
 }
 
 //-----------------------------------------------------------------------------
@@ -3677,7 +3504,6 @@ void CHLCombatWeaponWithSomePhysics ::CloseElements( void )
 		(CSoundEnvelopeController::GetController()).SoundChangePitch( GetMotorSound(), 50, 1.0f );
 	}
 	
-	DoEffect( EFFECT_CLOSED );
 }
 
 #define	PHYSCANNON_MAX_MASS		500
@@ -3790,7 +3616,6 @@ void CHLCombatWeaponWithSomePhysics ::DestroyEffects( void )
 void CHLCombatWeaponWithSomePhysics ::StopEffects( bool stopSound )
 {
 	// Turn off our effect state
-	DoEffect( EFFECT_NONE );
 
 	//Turn off main glow
 	if ( m_hCenterSprite != NULL )
@@ -4415,28 +4240,7 @@ void CHLCombatWeaponWithSomePhysics ::DoEffectNone( void )
 //-----------------------------------------------------------------------------
 void CHLCombatWeaponWithSomePhysics ::DoMegaEffect( int effectType, Vector *pos )
 {
-	switch( effectType )
-	{
-	case EFFECT_CLOSED:
-		DoMegaEffectClosed();
-		break;
 
-	case EFFECT_READY:
-		DoMegaEffectReady();
-		break;
-
-	case EFFECT_HOLDING:
-		DoMegaEffectHolding();
-		break;
-
-	case EFFECT_LAUNCH:
-		DoMegaEffectLaunch( pos );
-		break;
-
-	default:
-	case EFFECT_NONE:
-		break;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4457,29 +4261,6 @@ void CHLCombatWeaponWithSomePhysics ::DoEffect( int effectType, Vector *pos )
 		return;
 	}
 
-	switch( effectType )
-	{
-	case EFFECT_CLOSED:
-		DoEffectClosed( );
-		break;
-
-	case EFFECT_READY:
-		DoEffectReady( );
-		break;
-
-	case EFFECT_HOLDING:
-		DoEffectHolding();
-		break;
-
-	case EFFECT_LAUNCH:
-		DoEffectLaunch( pos );
-		break;
-
-	default:
-	case EFFECT_NONE:
-		DoEffectNone();
-		break;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4653,7 +4434,7 @@ void PhysCannonBeginUpgrade( CBaseAnimating *pAnim )
 
 bool PlayerPickupControllerIsHoldingEntity( CBaseEntity *pPickupControllerEntity, CBaseEntity *pHeldEntity )
 {
-	CPlayerPickupController *pController = dynamic_cast<CPlayerPickupController *>(pPickupControllerEntity);
+	CPlayerPickupController1 *pController = dynamic_cast<CPlayerPickupController1 *>(pPickupControllerEntity);
 
 	return pController ? pController->IsHoldingEntity( pHeldEntity ) : false;
 }
@@ -4665,7 +4446,7 @@ float PhysCannonGetHeldObjectMass( CBaseCombatWeapon *pActiveWeapon, IPhysicsObj
 	CHLCombatWeaponWithSomePhysics  *pCannon = dynamic_cast<CHLCombatWeaponWithSomePhysics  *>(pActiveWeapon);
 	if ( pCannon )
 	{
-		CGrabController &grab = pCannon->GetGrabController();
+		CGrabController1 &grab = pCannon->GetGrabController();
 		mass = grab.GetSavedMass( pHeldObject );
 	}
 
@@ -4677,7 +4458,7 @@ CBaseEntity *PhysCannonGetHeldEntity( CBaseCombatWeapon *pActiveWeapon )
 	CHLCombatWeaponWithSomePhysics  *pCannon = dynamic_cast<CHLCombatWeaponWithSomePhysics  *>(pActiveWeapon);
 	if ( pCannon )
 	{
-		CGrabController &grab = pCannon->GetGrabController();
+		CGrabController1 &grab = pCannon->GetGrabController();
 		return grab.GetAttached();
 	}
 
@@ -4687,7 +4468,7 @@ CBaseEntity *PhysCannonGetHeldEntity( CBaseCombatWeapon *pActiveWeapon )
 CBaseEntity *GetPlayerHeldEntity( CBasePlayer *pPlayer )
 {
 	CBaseEntity *pObject = NULL;
-	CPlayerPickupController *pPlayerPickupController = (CPlayerPickupController *)(pPlayer->GetUseEntity());
+	CPlayerPickupController1 *pPlayerPickupController = (CPlayerPickupController1 *)(pPlayer->GetUseEntity());
 
 	if ( pPlayerPickupController )
 	{
@@ -4711,10 +4492,10 @@ bool PhysCannonAccountableForObject( CBaseCombatWeapon *pPhysCannon, CBaseEntity
 float PlayerPickupGetHeldObjectMass( CBaseEntity *pPickupControllerEntity, IPhysicsObject *pHeldObject )
 {
 	float mass = 0.0f;
-	CPlayerPickupController *pController = dynamic_cast<CPlayerPickupController *>(pPickupControllerEntity);
+	CPlayerPickupController1 *pController = dynamic_cast<CPlayerPickupController1 *>(pPickupControllerEntity);
 	if ( pController )
 	{
-		CGrabController &grab = pController->GetGrabController();
+		CGrabController1 &grab = pController->GetGrabController();
 		mass = grab.GetSavedMass( pHeldObject );
 	}
 	return mass;
