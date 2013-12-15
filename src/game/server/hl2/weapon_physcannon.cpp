@@ -2097,6 +2097,11 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	if ( pOwner == NULL )
 		return;
 
+	//force power
+	if( pOwner->forcepower < 100 )
+		return;
+	pOwner->forcepower-=100;
+
 	if( m_bActive )
 	{
 		// Punch the object being held!!
@@ -2261,6 +2266,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 void CWeaponPhysCannon::Force (void)
 {
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	pOwner->forcepower++;
 	pOwner->Jump();
 	/*Vector	dir, end;
 	Vector	start = pOwner->EyePosition();

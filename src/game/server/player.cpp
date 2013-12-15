@@ -513,7 +513,7 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 CBasePlayer::CBasePlayer( )
 {
 	AddEFlags( EFL_NO_AUTO_EDICT_ATTACH );
-
+	forcepower = 5;
 #ifdef _DEBUG
 	m_vecAutoAim.Init();
 	m_vecAdditionalPVSOrigin.Init();

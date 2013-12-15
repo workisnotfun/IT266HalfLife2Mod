@@ -1140,6 +1140,9 @@ public:
 	void	InputUseDefaultAutoExposure( inputdata_t &inputdata );
 	void	InputUseDefaultBloomScale( inputdata_t &inputdata );
 //	void	InputSetBloomScaleRange( inputdata_t &inputdata );
+
+	//gg65 force power
+	int		forcepower;
 };
 
 typedef CHandle<CBasePlayer> CBasePlayerHandle;
