@@ -2393,6 +2393,7 @@ bool CGameMovement::CheckJumpButton( void )
     float startx = 0.0f;
 
     float flMul=20;
+	//gg65 force leaping
 	// No more effect
  	if (player->GetGroundEntity() == NULL)
 	{  
