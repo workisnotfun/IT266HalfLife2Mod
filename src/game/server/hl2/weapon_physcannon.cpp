@@ -2097,6 +2097,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	if ( pOwner == NULL )
 		return;
 
+	//gg65
 	//force power
 	if( pOwner->forcepower < 100 )
 		return;
