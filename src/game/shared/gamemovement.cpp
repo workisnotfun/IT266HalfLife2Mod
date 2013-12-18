@@ -2054,9 +2054,10 @@ void CGameMovement::FullWalkMove( )
 		}
 
 		// Was jump button pressed?
-		if (mv->m_nButtons & IN_JUMP)
+		if ((mv->m_nButtons & IN_JUMP) && player->forcepower > 50)
 		{
 			CheckJumpButton();
+			player->forcepower-=5;
 		}
 		else
 		{
@@ -2079,9 +2080,10 @@ void CGameMovement::FullWalkMove( )
 	// Not fully underwater
 	{
 		// Was jump button pressed?
-		if (mv->m_nButtons & IN_JUMP)
+		if ((mv->m_nButtons & IN_JUMP) && player->forcepower > 50)
 		{
  			CheckJumpButton();
+			player->forcepower-=5;
 		}
 		else
 		{

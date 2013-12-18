@@ -373,7 +373,7 @@ C_BasePlayer::C_BasePlayer() : m_iv_vecViewOffset( "C_BasePlayer::m_iv_vecViewOf
 	m_vecLadderNormal.Init();
 	m_vecOldViewAngles.Init();
 #endif
-
+	forcepower = 5;
 	m_pFlashlight = NULL;
 
 	m_pCurrentVguiScreen = NULL;

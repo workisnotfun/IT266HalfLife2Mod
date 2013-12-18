@@ -364,7 +364,8 @@ protected:
 
 public:
 	int m_StuckLast;
-	
+	//gg65
+	int forcepower;
 	// Data for only the local player
 	CNetworkVarEmbedded( CPlayerLocalData, m_Local );
 
