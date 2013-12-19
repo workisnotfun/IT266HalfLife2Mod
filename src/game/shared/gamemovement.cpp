@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -2395,7 +2395,7 @@ bool CGameMovement::CheckJumpButton( void )
     float startx = 0.0f;
 
     float flMul=20;
-	//gg65 force leaping
+	//gg65 force leaping gt35: cool but i think it would have been cooler to just jump higher instead
 	// No more effect
  	if (player->GetGroundEntity() == NULL)
 	{  
