@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: builds an intended movement command to send to the server
 //
@@ -445,7 +445,7 @@ void IN_StrafeDown( const CCommand &args ) {KeyDown(&in_strafe, args[1] );}
 void IN_StrafeUp( const CCommand &args ) {KeyUp(&in_strafe, args[1] );}
 void IN_Attack2Down( const CCommand &args ) { KeyDown(&in_attack2, args[1] );}
 void IN_Attack2Up( const CCommand &args ) {KeyUp(&in_attack2, args[1] );}
-void IN_ForceDown(const CCommand &args) {KeyDown(&in_force, args[1]);} //gg65 adding the force button 'x'
+void IN_ForceDown(const CCommand &args) {KeyDown(&in_force, args[1]);} //gg65 adding the force button 'x' gt35 cool way to make custom bindings
 void IN_ForceUp(const CCommand &args) {KeyUp(&in_force, args[1]);} //gg65 adding the force button 'x'
 void IN_UseDown ( const CCommand &args ) {KeyDown(&in_use, args[1] );}
 void IN_UseUp ( const CCommand &args ) {KeyUp(&in_use, args[1] );}
